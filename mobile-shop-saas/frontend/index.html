@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Shop Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="bi bi-phone"></i>
+                <h2>Mobile Shop Management</h2>
+                <p class="text-muted">Sign in to your account</p>
+            </div>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe">Remember me</label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </button>
+            </form>
+            <div id="loginError" class="alert alert-danger mt-3 d-none"></div>
+        </div>
+    </div>
+
+    <!-- Main App (Hidden by default) -->
+    <div id="mainApp" class="d-none">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <i class="bi bi-phone"></i> Mobile Shop
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto" id="navLinks">
+                        <!-- Dynamic navigation based on role -->
+                    </ul>
+                    <div class="d-flex align-items-center">
+                        <span class="text-white me-3" id="userName"></span>
+                        <button class="btn btn-outline-light btn-sm" onclick="logout()">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content Area -->
+        <div class="container-fluid mt-4">
+            <div id="contentArea">
+                <!-- Dynamic content loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalTitle">Add Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="productForm">
+                        <input type="hidden" id="productId">
+                        <div class="mb-3">
+                            <label class="form-label">Product Name *</label>
+                            <input type="text" class="form-control" id="productName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <input type="text" class="form-control" id="productCategory" list="categoryList">
+                            <datalist id="categoryList"></datalist>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Cost Price</label>
+                                <input type="number" class="form-control" id="productCostPrice" step="0.01">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Sale Price *</label>
+                                <input type="number" class="form-control" id="productSalePrice" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Stock Quantity</label>
+                                <input type="number" class="form-control" id="productStock" value="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Low Stock Threshold</label>
+                                <input type="number" class="form-control" id="productLowStock" value="10">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveProduct()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalTitle">Add User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <input type="hidden" id="userId">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" id="userFullName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="userEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password *</label>
+                            <input type="password" class="form-control" id="userPassword">
+                            <small class="text-muted" id="passwordHint">Required for new users</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role *</label>
+                            <select class="form-select" id="userRole" required>
+                                <option value="shop_user">Shop User</option>
+                                <option value="super_admin">Super Admin</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="shopSelectDiv">
+                            <label class="form-label">Shop *</label>
+                            <select class="form-select" id="userShop" required>
+                                <option value="">Select Shop</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="userPhone">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveUser()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shop Modal -->
+    <div class="modal fade" id="shopModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="shopModalTitle">Add Shop</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="shopForm">
+                        <input type="hidden" id="shopId">
+                        <div class="mb-3">
+                            <label class="form-label">Shop Name *</label>
+                            <input type="text" class="form-control" id="shopName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Owner Name *</label>
+                            <input type="text" class="form-control" id="shopOwner" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            <textarea class="form-control" id="shopAddress" rows="2"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="shopPhone">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="shopEmail">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveShop()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscription Modal -->
+    <div class="modal fade" id="subscriptionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Subscription</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="subscriptionForm">
+                        <input type="hidden" id="subscriptionShopId">
+                        <div class="mb-3">
+                            <label class="form-label">Shop</label>
+                            <input type="text" class="form-control" id="subscriptionShopName" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Plan Type *</label>
+                            <select class="form-select" id="subscriptionPlan" required onchange="updateSubscriptionAmount()">
+                                <option value="monthly">Monthly (30 days)</option>
+                                <option value="quarterly">Quarterly (90 days)</option>
+                                <option value="yearly">Yearly (365 days)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Amount (PKR) *</label>
+                            <input type="number" class="form-control" id="subscriptionAmount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="subscriptionStartDate" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="subscriptionEndDate" readonly>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveSubscription()">Create Subscription</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Renew Subscription Modal -->
+    <div class="modal fade" id="renewSubscriptionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Renew Subscription</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="renewSubscriptionId">
+                    <div class="mb-3">
+                        <label class="form-label">Plan Type *</label>
+                        <select class="form-select" id="renewPlan" required onchange="updateRenewAmount()">
+                            <option value="monthly">Monthly (30 days)</option>
+                            <option value="quarterly">Quarterly (90 days)</option>
+                            <option value="yearly">Yearly (365 days)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Additional Amount (PKR)</label>
+                        <input type="number" class="form-control" id="renewAmount" placeholder="Enter amount">
+                        <small class="text-muted">Leave blank to use default amount</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmRenewSubscription()">Renew Subscription</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bill Print Modal -->
+    <div class="modal fade" id="billPrintModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Print Bill</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="billPrintArea" class="bill-print"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="printBill()">
+                        <i class="bi bi-printer"></i> Print
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="downloadBillPDF()">
+                        <i class="bi bi-file-earmark-pdf"></i> PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay d-none">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto" id="toastTitle">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jsPDF with fallback CDNs -->
+    <script>
+        // Global flag to track jsPDF loading status
+        window.jspdfLoaded = false;
+        window.jspdfLoadError = false;
+
+        // Function to show jsPDF load error warning
+        function showJSPDFLoadError() {
+            console.error('Failed to load jsPDF from all CDNs. PDF download will not work.');
+            window.jspdfLoadError = true;
+            document.addEventListener('DOMContentLoaded', function() {
+                var warning = document.createElement('div');
+                warning.className = 'alert alert-warning m-3';
+                warning.innerHTML = '<strong>Warning:</strong> jsPDF library failed to load. PDF download feature may not work. Please check your internet connection or try using a different network.';
+                warning.style.position = 'fixed';
+                warning.style.top = '10px';
+                warning.style.right = '10px';
+                warning.style.zIndex = '9999';
+                warning.style.maxWidth = '400px';
+                document.body.appendChild(warning);
+            });
+        }
+
+        // Function to load jsPDF from a CDN with timeout
+        function loadJSPDF(src, timeout = 10000) {
+            return new Promise(function(resolve, reject) {
+                var script = document.createElement('script');
+                script.src = src;
+                
+                var timeoutId = setTimeout(function() {
+                    script.remove();
+                    reject(new Error('Timeout loading jsPDF from ' + src));
+                }, timeout);
+
+                script.onload = function() {
+                    clearTimeout(timeoutId);
+                    if (window.jspdf && window.jspdf.jsPDF) {
+                        window.jspdfLoaded = true;
+                        console.log('jsPDF loaded successfully from:', src);
+                        resolve();
+                    } else {
+                        script.remove();
+                        reject(new Error('jsPDF object not found after loading from ' + src));
+                    }
+                };
+
+                script.onerror = function() {
+                    clearTimeout(timeoutId);
+                    script.remove();
+                    reject(new Error('Failed to load jsPDF from ' + src));
+                };
+
+                document.head.appendChild(script);
+            });
+        }
+
+        // Try to load jsPDF from multiple CDNs
+        var cdnUrls = [
+            'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+            'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
+            'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js'
+        ];
+
+        // Try each CDN in sequence
+        async function loadJSPDFWithFallbacks() {
+            for (var i = 0; i < cdnUrls.length; i++) {
+                try {
+                    console.log('Attempting to load jsPDF from CDN ' + (i + 1) + ':', cdnUrls[i]);
+                    await loadJSPDF(cdnUrls[i], 8000); // 8 second timeout per CDN
+                    return; // Success, exit the loop
+                } catch (error) {
+                    console.warn('Failed to load jsPDF from CDN ' + (i + 1) + ':', error.message);
+                    if (i < cdnUrls.length - 1) {
+                        console.log('Trying next CDN...');
+                    }
+                }
+            }
+            // All CDNs failed
+            showJSPDFLoadError();
+        }
+
+        // Start loading jsPDF
+        loadJSPDFWithFallbacks();
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/inventory.js"></script>
+    <script src="js/billing.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
