@@ -37,9 +37,7 @@ npm start
 ### Frontend
 Open `frontend/index.html` in browser or use a local server
 
-## Default Admin Credentials
-- Email: admin@mobileshop.com
-- Password: admin123
+
 
 ## Features
 - Multi-tenant architecture (50+ shops)
